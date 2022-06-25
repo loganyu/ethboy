@@ -14,6 +14,7 @@ class App extends Component {
     // Get the passwords and store them in state
     fetch('/api/passwords')
       .then(res => res.json())
+      // @ts-ignore
       .then(passwords => this.setState({ passwords }));
   }
 

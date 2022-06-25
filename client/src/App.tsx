@@ -167,7 +167,7 @@ class App extends React.Component<any, any> {
     // create new connector
     const connector = new WalletConnect({ bridge, qrcodeModal: QRCodeModal });
 
-    // @ts-ignore
+    // ts-ignore
     await this.setState({ connector });
 
     // check if already connected
@@ -220,6 +220,8 @@ class App extends React.Component<any, any> {
     if (connector.connected) {
       const { chainId, accounts } = connector;
       const address = accounts[0];
+      
+      // @ts-ignore
       this.setState({
         connected: true,
         chainId,
@@ -229,6 +231,7 @@ class App extends React.Component<any, any> {
       this.onSessionUpdate(accounts, chainId);
     }
 
+    // @ts-ignore
     this.setState({ connector });
   };
 
@@ -241,12 +244,14 @@ class App extends React.Component<any, any> {
   };
 
   public resetApp = async () => {
+    // @ts-ignore
     await this.setState({ ...INITIAL_STATE });
   };
 
   public onConnect = async (payload: IInternalEvent) => {
     const { chainId, accounts } = payload.params[0];
     const address = accounts[0];
+    // @ts-ignore
     await this.setState({
       connected: true,
       chainId,
@@ -262,12 +267,14 @@ class App extends React.Component<any, any> {
 
   public onSessionUpdate = async (accounts: string[], chainId: number) => {
     const address = accounts[0];
+    // @ts-ignore
     await this.setState({ chainId, accounts, address });
     await this.getAccountAssets();
   };
 
   public getAccountAssets = async () => {
     const { address, chainId } = this.state;
+    // @ts-ignore
     this.setState({ fetching: true });
     try {
       // get account balances
@@ -276,10 +283,12 @@ class App extends React.Component<any, any> {
       await this.setState({ fetching: false, address, assets });
     } catch (error) {
       console.error(error);
+      // @ts-ignore
       await this.setState({ fetching: false });
     }
   };
 
+  // @ts-ignore
   public toggleModal = () => this.setState({ showModal: !this.state.showModal });
 
   public testSendTransaction = async () => {
@@ -331,6 +340,7 @@ class App extends React.Component<any, any> {
       this.toggleModal();
 
       // toggle pending request indicator
+      // @ts-ignore
       this.setState({ pendingRequest: true });
 
       // send transaction
@@ -346,6 +356,7 @@ class App extends React.Component<any, any> {
       };
 
       // display result
+      // @ts-ignore
       this.setState({
         connector,
         pendingRequest: false,
@@ -353,6 +364,7 @@ class App extends React.Component<any, any> {
       });
     } catch (error) {
       console.error(error);
+      // @ts-ignore
       this.setState({ connector, pendingRequest: false, result: null });
     }
   };
@@ -406,6 +418,7 @@ class App extends React.Component<any, any> {
       this.toggleModal();
 
       // toggle pending request indicator
+      // @ts-ignore
       this.setState({ pendingRequest: true });
 
       // send transaction
@@ -421,6 +434,7 @@ class App extends React.Component<any, any> {
       };
 
       // display result
+      // @ts-ignore
       this.setState({
         connector,
         pendingRequest: false,
@@ -428,6 +442,7 @@ class App extends React.Component<any, any> {
       });
     } catch (error) {
       console.error(error);
+      // @ts-ignore
       this.setState({ connector, pendingRequest: false, result: null });
     }
   };
@@ -453,6 +468,7 @@ class App extends React.Component<any, any> {
       this.toggleModal();
 
       // toggle pending request indicator
+      // @ts-ignore
       this.setState({ pendingRequest: true });
 
       // send message
@@ -470,6 +486,7 @@ class App extends React.Component<any, any> {
       };
 
       // display result
+      // @ts-ignore
       this.setState({
         connector,
         pendingRequest: false,
@@ -477,6 +494,7 @@ class App extends React.Component<any, any> {
       });
     } catch (error) {
       console.error(error);
+      // @ts-ignore
       this.setState({ connector, pendingRequest: false, result: null });
     }
   };
@@ -502,6 +520,7 @@ class App extends React.Component<any, any> {
       this.toggleModal();
 
       // toggle pending request indicator
+      // @ts-ignore
       this.setState({ pendingRequest: true });
 
       // send message
@@ -520,6 +539,7 @@ class App extends React.Component<any, any> {
       };
 
       // display result
+      // @ts-ignore
       this.setState({
         connector,
         pendingRequest: false,
@@ -527,6 +547,7 @@ class App extends React.Component<any, any> {
       });
     } catch (error) {
       console.error(error);
+      // @ts-ignore
       this.setState({ connector, pendingRequest: false, result: null });
     }
   };
@@ -552,6 +573,7 @@ class App extends React.Component<any, any> {
       this.toggleModal();
 
       // toggle pending request indicator
+      // @ts-ignore
       this.setState({ pendingRequest: true });
 
       // send message
@@ -570,6 +592,7 @@ class App extends React.Component<any, any> {
       };
 
       // display result
+      // @ts-ignore
       this.setState({
         connector,
         pendingRequest: false,
@@ -577,6 +600,7 @@ class App extends React.Component<any, any> {
       });
     } catch (error) {
       console.error(error);
+      // @ts-ignore
       this.setState({ connector, pendingRequest: false, result: null });
     }
   };
@@ -598,6 +622,7 @@ class App extends React.Component<any, any> {
       this.toggleModal();
 
       // toggle pending request indicator
+      // @ts-ignore
       this.setState({ pendingRequest: true });
 
       // sign typed data
@@ -616,6 +641,7 @@ class App extends React.Component<any, any> {
       };
 
       // display result
+      // @ts-ignore
       this.setState({
         connector,
         pendingRequest: false,
@@ -623,6 +649,7 @@ class App extends React.Component<any, any> {
       });
     } catch (error) {
       console.error(error);
+      // @ts-ignore
       this.setState({ connector, pendingRequest: false, result: null });
     }
   };
