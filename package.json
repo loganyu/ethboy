@@ -13,5 +13,9 @@
     "create-react-app": "^5.0.1",
     "express": "^4.18.1",
     "password-generator": "^2.3.2"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "heroku-postbuild": "cd client && npm install && npm run build"
   }
 }
