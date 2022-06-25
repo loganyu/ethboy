@@ -7,6 +7,7 @@
     "lib": ["es7", "dom"],
     "sourceMap": true,
     "allowJs": true,
+    "checkJs": false,
     "jsx": "react",
     "moduleResolution": "node",
     "rootDir": "src",
@@ -30,6 +31,7 @@
     "acceptance-tests",
     "webpack",
     "jest",
+    "src",
     "src/setupTests.ts"
   ]
 }
