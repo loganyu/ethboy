@@ -11,6 +11,9 @@
   "author": "WalletConnect, Inc. <walletconnect.com>",
   "homepage": "https://walletconnect.org",
   "license": "MIT",
+  "engines": {
+    "node": "16.x"
+  },
   "scripts": {
     "start": "react-scripts-ts start",
     "build": "react-scripts-ts build",
