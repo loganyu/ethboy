@@ -24,6 +24,9 @@ import Banner from "./components/Banner";
 import AccountAssets from "./components/AccountAssets";
 import { eip712 } from "./helpers/eip712";
 
+// EPNS
+import { NotificationItem, api, utils } from "@epnsproject/frontend-sdk-staging";
+
 const SLayout = styled.div`
   position: relative;
   width: 100%;
@@ -138,6 +141,7 @@ interface IAppState {
   address: string;
   result: any | null;
   assets: IAssetData[];
+  notifications: any[];
 }
 
 const INITIAL_STATE: IAppState = {
@@ -152,6 +156,7 @@ const INITIAL_STATE: IAppState = {
   address: "",
   result: null,
   assets: [],
+  notifications: []
 };
 
 class App extends React.Component<any, any> {
@@ -253,6 +258,7 @@ class App extends React.Component<any, any> {
       address,
     });
     this.getAccountAssets();
+    this.getPushNotifications();
   };
 
   public onDisconnect = async () => {
@@ -263,6 +269,7 @@ class App extends React.Component<any, any> {
     const address = accounts[0];
     await this.setState({ chainId, accounts, address });
     await this.getAccountAssets();
+    await this.getPushNotifications();
   };
 
   public getAccountAssets = async () => {
@@ -278,6 +285,24 @@ class App extends React.Component<any, any> {
       await this.setState({ fetching: false });
     }
   };
+
+  public getPushNotifications = async () => {
+    console.log('start getPushNotifications')
+    // define the variables required to make a request
+    const walletAddress = this.state.address
+    const pageNumber = 1;
+    const itemsPerPage = 20;
+
+    // fetch the notifications
+    const {count, results} = await api.fetchNotifications(walletAddress, itemsPerPage, pageNumber)
+    console.log('count: ', count)
+    console.log({results});
+
+    // parse all the fetched notifications
+    const parsedResponse = utils.parseApiResponse(results);
+    console.log(parsedResponse);
+    this.setState({notifications: parsedResponse});
+  }
 
   public toggleModal = () => this.setState({ showModal: !this.state.showModal });
 
@@ -636,6 +661,7 @@ class App extends React.Component<any, any> {
       showModal,
       pendingRequest,
       result,
+      notifications,
     } = this.state;
     return (
       <SLayout>
@@ -645,6 +671,7 @@ class App extends React.Component<any, any> {
             address={address}
             chainId={chainId}
             killSession={this.killSession}
+            notifications={notifications}
           />
           <SContent>
             {!address && !assets.length ? (
@@ -661,6 +688,24 @@ class App extends React.Component<any, any> {
             ) : (
               <SBalances>
                 <Banner />
+                <h3>Notifications</h3>
+                {
+                  notifications.map(oneNotification => (
+                    <span key={oneNotification.sid}>
+                      {oneNotification.title} - {oneNotification.message}
+
+                    </span>
+                    // <NotificationItem
+                    //   key={oneNotification.sid}
+                    //   notificationTitle={oneNotification.title}
+                    //   notificationBody={oneNotification.message}
+                    //   cta={oneNotification.cta}
+                    //   app={oneNotification.app}
+                    //   image={oneNotification.image}
+                    //   url={oneNotification.url}
+                    // />
+                  ))
+                }
                 <h3>Actions</h3>
                 <Column center>
                   <STestButtonContainer>

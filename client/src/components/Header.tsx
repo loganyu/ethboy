@@ -81,9 +81,10 @@ interface IHeaderProps {
   connected: boolean;
   address: string;
   chainId: number;
+  notifications: any;
 }
 
-const Header = ({ connected, address, chainId, killSession }: IHeaderProps) => {
+const Header = ({ connected, address, chainId, killSession, notifications }: IHeaderProps) => {
   let activeChain = null;
 
   try {
