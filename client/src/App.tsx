@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import * as React from "react";
 import styled from "styled-components";
 import WalletConnect from "@walletconnect/client";
@@ -167,7 +169,7 @@ class App extends React.Component<any, any> {
     // create new connector
     const connector = new WalletConnect({ bridge, qrcodeModal: QRCodeModal });
 
-    // ts-ignore
+    // @ts-ignore
     await this.setState({ connector });
 
     // check if already connected
