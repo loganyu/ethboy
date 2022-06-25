@@ -167,6 +167,7 @@ class App extends React.Component<any, any> {
     // create new connector
     const connector = new WalletConnect({ bridge, qrcodeModal: QRCodeModal });
 
+    // @ts-ignore
     await this.setState({ connector });
 
     // check if already connected
@@ -650,9 +651,7 @@ class App extends React.Component<any, any> {
             {!address && !assets.length ? (
               <SLanding center>
                 <h3>
-                  {`Try out WalletConnect`}
-                  <br />
-                  <span>{`v${process.env.REACT_APP_VERSION}`}</span>
+                  {`Manage EPNS Notifications with EthBoy! (◠‿◠)`}
                 </h3>
                 <SButtonContainer>
                   <SConnectButton left onClick={this.connect} fetching={fetching}>
