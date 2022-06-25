@@ -259,6 +259,7 @@ class App extends React.Component<any, any> {
     });
     this.getAccountAssets();
     this.getPushNotifications();
+    this.handleOpenSeaUpdates();
   };
 
   public onDisconnect = async () => {

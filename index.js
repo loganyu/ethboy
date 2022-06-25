@@ -33,3 +33,39 @@ app.listen(port);
 
 console.log(`Password generator listening on ${port}`);
 
+// OpenSea
+const { OpenSeaStreamClient } = require('@opensea/stream-js');
+const { WebSocket } = require('ws');
+
+const openSeaClient = new OpenSeaStreamClient({
+  token: 'c130c57a59cc497387c8c0883fb61306',
+  connectOptions: {
+    transport: WebSocket
+  }
+});
+
+function handleOpenSeaUpdates(collectionSlug) {
+  console.log('handleOpenSeaUpdates')
+  openSeaClient.connect();
+
+  openSeaClient.onItemMetadataUpdated(collectionSlug, (event) => {
+    console.log(event);
+    // handle event
+  });
+
+  openSeaClient.onItemListed(collectionSlug, (event) => {
+    console.log(event);
+    // handle event
+  });
+
+  openSeaClient.onItemSold(collectionSlug, (event) => {
+    console.log(event);
+    // handle event
+  });
+
+  openSeaClient.onItemTransferred(collectionSlug, (event) => {
+    // handle event
+  });
+}
+
+handleOpenSeaUpdates('tiny-dinos-eth')
