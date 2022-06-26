@@ -36,6 +36,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Table from 'react-bootstrap/Table';
 import Form from 'react-bootstrap/Form';
+import Card from 'react-bootstrap/Card';
 
 const SLayout = styled.div`
   position: relative;
@@ -844,11 +845,25 @@ class App extends React.Component<any, any> {
                       <h3>Notifications</h3>
                       {
                         !loadingNotifications ?
-
-                          notifications.map(oneNotification => (
-                            <span key={oneNotification.sid}>
-                              {oneNotification.title} - {oneNotification.message}
-                            </span>
+                          notifications.map(n => (
+                            <>
+                              <Card key={n.sid} style={{ width: '24rem' }}>
+                                {n?.image &&
+                                  <Card.Img variant="top" src={n.image} />
+                                } 
+                                <Card.Body>
+                                  <Card.Title>{n.title}</Card.Title>
+                                  <Card.Text>
+                                    {n.notification.body}
+                                  </Card.Text>
+                                  {n?.cta &&
+                                    <BootstrapButton variant="primary"><a target="_blank" href={n.cta}>View</a></BootstrapButton>
+                                  }
+                                  
+                                </Card.Body>
+                              </Card>
+                              <br />
+                            </>
                           ))
                           :
                           <Column center>
