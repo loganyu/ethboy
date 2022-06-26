@@ -23,9 +23,18 @@ import { IAssetData } from "./helpers/types";
 import Banner from "./components/Banner";
 import AccountAssets from "./components/AccountAssets";
 import { eip712 } from "./helpers/eip712";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 // EPNS
 import { NotificationItem, api, utils } from "@epnsproject/frontend-sdk-staging";
+
+// Bootstrap
+import Nav from 'react-bootstrap/Nav';
+import BootstrapButton from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Table from 'react-bootstrap/Table';
 
 const SLayout = styled.div`
   position: relative;
@@ -129,6 +138,18 @@ const STestButton = styled(Button as any)`
   margin: 12px;
 `;
 
+const collectionBySlug = {
+  'tiny-dinos-eth': {name: 'tiny dinos (eth)', image: 'https://lh3.googleusercontent.com/ZoC0EZPOaQeMGdAmqXh-PbOqEdrINf37NnD7wxI8FRa0Ymt8corMCzOP0xMPXjx2P12cvB6pDLWWnPSFJ1cOwbjqZc2_c3haN3n_8A=s168'},
+  'cool-cats-nft': {name: 'Cool Cats NFT', image: 'https://lh3.googleusercontent.com/LIov33kogXOK4XZd2ESj29sqm_Hww5JSdO7AFn5wjt8xgnJJ0UpNV9yITqxra3s_LMEW1AnnrgOVB_hDpjJRA1uF4skI5Sdi_9rULi8=s168'},
+  'doodles-official': {name: 'Doodles', image: 'https://lh3.googleusercontent.com/7B0qai02OdHA8P_EOVK672qUliyjQdQDGNrACxs7WnTgZAkJa_wWURnIFKeOh5VTf8cfTqW3wQpozGedaC9mteKphEOtztls02RlWQ=s168'},
+  'moonrunnersnft': {name: 'Moonrunners Official', image: 'https://openseauserdata.com/files/061eb8949cff84d0be850fc9a566e4fe.png'},
+  'proof-moonbirds': {name: 'Moonbirds', image: 'https://lh3.googleusercontent.com/H-eyNE1MwL5ohL-tCfn_Xa1Sl9M9B4612tLYeUlQubzt4ewhr4huJIR5OLuyO3Z5PpJFSwdm7rq-TikAh7f5eUw338A2cy6HRH75=s168'},
+  'cryptopunks': {name: 'CryptoPunks', image: 'https://lh3.googleusercontent.com/BdxvLseXcfl57BiuQcQYdJ64v-aI8din7WPk0Pgo3qQFhAUH-B6i-dCqqc_mCkRIzULmwzwecnohLhrcH8A9mpWIZqA7ygc52Sr81hE=s168'},
+  'boredapeyachtclub': {name: 'Bored Ape Yacht Club', image: 'https://lh3.googleusercontent.com/Ju9CkWtV-1Okvf45wo8UctR-M9He2PjILP0oOvxE89AyiPPGtrR3gysu1Zgy0hjd2xKIgjJJtWIc0ybj4Vd7wv8t3pxDGHoJBzDB=s168'},
+  'mutant-ape-yacht-club': {name: 'Mutant Ape Yacht Club', image: 'https://lh3.googleusercontent.com/lHexKRMpw-aoSyB1WdFBff5yfANLReFxHzt1DOj_sg7mS14yARpuvYcUtsyyx-Nkpk6WTcUPFoG53VnLJezYi8hAs0OxNZwlw6Y-dmI=s168'},
+  'mfers': {name: 'mfers', image: 'https://lh3.googleusercontent.com/J2iIgy5_gmA8IS6sXGKGZeFVZwhldQylk7w7fLepTE9S7ICPCn_dlo8kypX8Ju0N6wvLVOKsbP_7bNGd8cpKmWhFQmqMXOC8q2sOdqw=s168'},
+}
+
 interface IAppState {
   connector: WalletConnect | null;
   fetching: boolean;
@@ -142,6 +163,10 @@ interface IAppState {
   result: any | null;
   assets: IAssetData[];
   notifications: any[];
+  activeTab: string;
+  loadingNotifications: boolean;
+  loadingSubscriptions: boolean;
+  subscriptions: any[];
 }
 
 const INITIAL_STATE: IAppState = {
@@ -156,7 +181,11 @@ const INITIAL_STATE: IAppState = {
   address: "",
   result: null,
   assets: [],
-  notifications: []
+  notifications: [],
+  activeTab: 'subscriptions',
+  loadingNotifications: true,
+  loadingSubscriptions: true,
+  subscriptions: [],
 };
 
 class App extends React.Component<any, any> {
@@ -258,6 +287,7 @@ class App extends React.Component<any, any> {
       address,
     });
     this.getAccountAssets();
+    this.getPushSubscriptions();
     this.getPushNotifications();
   };
 
@@ -269,6 +299,7 @@ class App extends React.Component<any, any> {
     const address = accounts[0];
     await this.setState({ chainId, accounts, address });
     await this.getAccountAssets();
+    await this.getPushSubscriptions();
     await this.getPushNotifications();
   };
 
@@ -288,6 +319,7 @@ class App extends React.Component<any, any> {
 
   public getPushNotifications = async () => {
     console.log('start getPushNotifications')
+    this.setState({loadingNotifications: true})
     // define the variables required to make a request
     const walletAddress = this.state.address
     const pageNumber = 1;
@@ -301,7 +333,30 @@ class App extends React.Component<any, any> {
     // parse all the fetched notifications
     const parsedResponse = utils.parseApiResponse(results);
     console.log(parsedResponse);
-    this.setState({notifications: parsedResponse});
+    this.setState({notifications: parsedResponse, loadingNotifications: false});
+  }
+
+  public getPushSubscriptions = 
+  async () => {
+    console.log('start getPushSubscriptions')
+    this.setState({loadingSubscriptions: true})
+    const walletAddress = this.state.address
+
+    fetch(`/api/notifications/${walletAddress}`).then(res => res.json())
+      .then(subscriptions => this.setState({subscriptions, loadingSubscriptions: false}));
+
+  }
+
+  public deleteSubscription = (subscription) => {
+    const address = this.state.address;
+    const collectionSlug = subscription[0];
+    const notifyType = subscription[1];
+
+    fetch('/api/remove_notification', {method: 'POST', body: JSON.stringify({
+      address, collectionSlug, notifyType
+    })})
+
+    this.setState({subscriptions: this.state.subscriptions.filter((s) => s !== subscription)})
   }
 
   public toggleModal = () => this.setState({ showModal: !this.state.showModal });
@@ -651,6 +706,10 @@ class App extends React.Component<any, any> {
     }
   };
 
+  public setActiveTab = (activeTab) => {
+    this.setState({activeTab})
+  }
+
   public render = () => {
     const {
       assets,
@@ -662,6 +721,10 @@ class App extends React.Component<any, any> {
       pendingRequest,
       result,
       notifications,
+      activeTab,
+      loadingNotifications,
+      loadingSubscriptions,
+      subscriptions
     } = this.state;
     return (
       <SLayout>
@@ -687,58 +750,83 @@ class App extends React.Component<any, any> {
               </SLanding>
             ) : (
               <SBalances>
-                <Banner />
-                <h3>Notifications</h3>
-                {
-                  notifications.map(oneNotification => (
-                    <span key={oneNotification.sid}>
-                      {oneNotification.title} - {oneNotification.message}
+                <Container>
+                  <Row>
+                    <Col>
+                      <BootstrapButton onClick={() => this.setActiveTab('subscriptions')} variant="outline-primary" active={activeTab==="subscriptions"}>
+                        Subscriptions
+                      </BootstrapButton>
+                    </Col>
+                    <Col>
+                      <BootstrapButton onClick={() => this.setActiveTab('notifications')}variant="outline-primary" active={activeTab==="notifications"}>
+                        Notifications
+                      </BootstrapButton>
+                    </Col>
+                  </Row>
+                  {activeTab === 'subscriptions' && 
+                    <>
+                      <h3>Subscriptions</h3>
+                      {
+                        !loadingSubscriptions ?
+                          <>
+                            {subscriptions.length === 0 && !loadingSubscriptions &&
+                              <div>You have no subscriptions</div>}
+                            {subscriptions.length !== 0 && !loadingSubscriptions &&
+                            <Table striped bordered hover size="sm">
+                                <thead>
+                                  <tr>
+                                    <th />
+                                    <th>Collection</th>
+                                    <th>Notification Type</th>
+                                    <th />
+                                  </tr>
+                                </thead>
+                                <tbody>
 
-                    </span>
-                    // <NotificationItem
-                    //   key={oneNotification.sid}
-                    //   notificationTitle={oneNotification.title}
-                    //   notificationBody={oneNotification.message}
-                    //   cta={oneNotification.cta}
-                    //   app={oneNotification.app}
-                    //   image={oneNotification.image}
-                    //   url={oneNotification.url}
-                    // />
-                  ))
-                }
-                <h3>Actions</h3>
-                <Column center>
-                  <STestButtonContainer>
-                    <STestButton left onClick={this.testSendTransaction}>
-                      {"eth_sendTransaction"}
-                    </STestButton>
-                    <STestButton left onClick={this.testSignTransaction}>
-                      {"eth_signTransaction"}
-                    </STestButton>
-                    <STestButton left onClick={this.testSignTypedData}>
-                      {"eth_signTypedData"}
-                    </STestButton>
-                    <STestButton left onClick={this.testLegacySignMessage}>
-                      {"eth_sign (legacy)"}
-                    </STestButton>
-                    <STestButton left onClick={this.testStandardSignMessage}>
-                      {"eth_sign (standard)"}
-                    </STestButton>
-                    <STestButton left onClick={this.testPersonalSignMessage}>
-                      {"personal_sign"}
-                    </STestButton>
-                  </STestButtonContainer>
-                </Column>
-                <h3>Balances</h3>
-                {!fetching ? (
-                  <AccountAssets chainId={chainId} assets={assets} />
-                ) : (
-                  <Column center>
-                    <SContainer>
-                      <Loader />
-                    </SContainer>
-                  </Column>
-                )}
+                                  {subscriptions.map(sub => (
+                                    <tr>
+                                      <td><img width="32" height="32" src={collectionBySlug[sub[0]].image} /></td>
+                                      <td>{collectionBySlug[sub[0]].name}</td>
+                                      <td>{sub[1]}</td>
+                                      <td>
+                                        <BootstrapButton onClick={() => this.deleteSubscription(sub)}  variant="danger">Delete</BootstrapButton>
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </Table>
+                            }
+                          </>
+                          :
+                          <Column center>
+                            <SContainer>
+                              <Loader />
+                            </SContainer>
+                          </Column>
+                      }
+                    </>
+                  }
+                  {activeTab === 'notifications' && 
+                    <>
+                      <h3>Notifications</h3>
+                      {
+                        !loadingNotifications ?
+
+                          notifications.map(oneNotification => (
+                            <span key={oneNotification.sid}>
+                              {oneNotification.title} - {oneNotification.message}
+                            </span>
+                          ))
+                          :
+                          <Column center>
+                            <SContainer>
+                              <Loader />
+                            </SContainer>
+                          </Column>
+                      }
+                    </>
+                  }
+                </Container>
               </SBalances>
             )}
           </SContent>

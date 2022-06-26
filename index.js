@@ -1,8 +1,10 @@
 const express = require('express');
 const path = require('path');
 const generatePassword = require('password-generator');
+const bodyParser = require('body-parser');
 
 const app = express();
+app.use(bodyParser.json({ type: '*/*' }));
 
 // data
 const walletToNotifications = {}
@@ -38,10 +40,14 @@ app.get('/api/passwords', (req, res) => {
   console.log(`Sent ${count} passwords`);
 });
 
+
 app.get('/api/notifications/:address', (req, res) => {
-  if (!walletToNotifications[req.params.address]){
-    res.json()
+  if (walletToNotifications[req.params.address] === undefined){
+    res.json();
+  //  return
   }
+  console.log(walletToNotifications)
+  console.log(req.params.address)
   const notifications = walletToNotifications[req.params.address].map((not) => not.slice(0,-1))
   // Return them as json
   res.json(notifications);
@@ -49,26 +55,33 @@ app.get('/api/notifications/:address', (req, res) => {
   console.log(`Sent ${notifications.length} notifications`);
 });
 
-app.post('api/create_notification', (req, res) => {
+app.post('/api/create_notification', (req, res) => {
   const address = req.body.address; 
   const collectionSlug = req.body.collectionSlug;
   const notifyType = req.body.notifyType;
 
   handleOpenSeaUpdates(address, collectionSlug, notifyType)
+
+  res.json();
 })
 
-app.post('api/remove_notification', (req, res) => {
+app.post('/api/remove_notification', (req, res) => {
+  console.log('remove notification', req.body)
   const address = req.body.address; 
   const collectionSlug = req.body.collectionSlug;
   const notifyType = req.body.notifyType;
+  console.log('before', walletToNotifications[address])
 
   walletToNotifications[address] = walletToNotifications[address].filter((notifyInfo) => {
     if (notifyInfo[0] === collectionSlug && notifyInfo[1] === notifyType) {
-      notifyInfo[2]();
+      notifyInfo[2]()
       return false;
     }
     return true
   })
+  console.log('after', walletToNotifications[address])
+
+  res.json(req.body);
 })
 
 // The "catchall" handler: for any request that doesn't
@@ -221,8 +234,8 @@ function handleOpenSeaUpdates(address, collectionSlug, notifyType) {
   walletToNotifications[address].push([collectionSlug, notifyType, unsubscribe]);
 }
 
-Object.keys(collectionBySlug).forEach((collectionSlug) => {
-  notifyTypes.forEach((notifyType) => {
-    handleOpenSeaUpdates("0x012eAA22F2286E615e582963c4b8F3F1a5646882", collectionSlug, notifyType)
-  })
-})
+// Object.keys(collectionBySlug).forEach((collectionSlug) => {
+//   notifyTypes.forEach((notifyType) => {
+//     handleOpenSeaUpdates("0x012eaa22f2286e615e582963c4b8f3f1a5646882", collectionSlug, notifyType)
+//   })
+// })
