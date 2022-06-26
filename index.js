@@ -20,6 +20,35 @@ const collectionBySlug = {
 }
 const notifyTypes = ['listed', 'sold', 'transferred', 'metadataUpdates', 'cancelled', 'receivedOffer', 'receivedBid'];
 
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, 'client/build')));
+
+// Put all API endpoints under '/api'
+app.get('/api/passwords', (req, res) => {
+  const count = 5;
+
+  // Generate some passwords
+  const passwords = Array.from(Array(count).keys()).map(i =>
+    generatePassword(12, false)
+  )
+
+  // Return them as json
+  res.json(passwords);
+
+  console.log(`Sent ${count} passwords`);
+});
+
+app.get('/api/notifications/:address', (req, res) => {
+  if (!walletToNotifications[req.params.address]){
+    res.json()
+  }
+  const notifications = walletToNotifications[req.params.address].map((not) => not.slice(0,-1))
+  // Return them as json
+  res.json(notifications);
+
+  console.log(`Sent ${notifications.length} notifications`);
+});
+
 app.post('api/create_notification', (req, res) => {
   const address = req.body.address; 
   const collectionSlug = req.body.collectionSlug;
@@ -42,34 +71,16 @@ app.post('api/remove_notification', (req, res) => {
   })
 })
 
-// Serve static files from the React app
-app.use(express.static(path.join(__dirname, 'client/build')));
-
-// Put all API endpoints under '/api'
-app.get('/api/passwords', (req, res) => {
-  const count = 5;
-
-  // Generate some passwords
-  const passwords = Array.from(Array(count).keys()).map(i =>
-    generatePassword(12, false)
-  )
-
-  // Return them as json
-  res.json(passwords);
-
-  console.log(`Sent ${count} passwords`);
-});
-
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname+'/client/build/index.html'));
-});
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname+'/client/build/index.html'));
+// });
 
 const port = process.env.PORT || 5000;
 app.listen(port);
 
-console.log(`Password generator listening on ${port}`);
+console.log(`EthBoy listening on ${port}`);
 
 // OpenSea
 const { OpenSeaStreamClient } = require('@opensea/stream-js');
@@ -210,8 +221,8 @@ function handleOpenSeaUpdates(address, collectionSlug, notifyType) {
   walletToNotifications[address].push([collectionSlug, notifyType, unsubscribe]);
 }
 
-// Object.keys(collectionBySlug).forEach((collectionSlug) => {
-//   notifyTypes.forEach((notifyType) => {
-//     handleOpenSeaUpdates("0x012eAA22F2286E615e582963c4b8F3F1a5646882", collectionSlug, notifyType)
-//   })
-// })
+Object.keys(collectionBySlug).forEach((collectionSlug) => {
+  notifyTypes.forEach((notifyType) => {
+    handleOpenSeaUpdates("0x012eAA22F2286E615e582963c4b8F3F1a5646882", collectionSlug, notifyType)
+  })
+})
