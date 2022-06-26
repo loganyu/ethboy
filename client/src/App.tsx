@@ -35,6 +35,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Table from 'react-bootstrap/Table';
+import Form from 'react-bootstrap/Form';
 
 const SLayout = styled.div`
   position: relative;
@@ -167,6 +168,8 @@ interface IAppState {
   loadingNotifications: boolean;
   loadingSubscriptions: boolean;
   subscriptions: any[];
+  formNotification: string;
+  formCollection: string;
 }
 
 const INITIAL_STATE: IAppState = {
@@ -186,6 +189,8 @@ const INITIAL_STATE: IAppState = {
   loadingNotifications: true,
   loadingSubscriptions: true,
   subscriptions: [],
+  formNotification: '',
+  formCollection: ''
 };
 
 class App extends React.Component<any, any> {
@@ -343,8 +348,7 @@ class App extends React.Component<any, any> {
     const walletAddress = this.state.address
 
     fetch(`/api/notifications/${walletAddress}`).then(res => res.json())
-      .then(subscriptions => this.setState({subscriptions, loadingSubscriptions: false}));
-
+      .then(subscriptions => this.setState({subscriptions: subscriptions.reverse(), loadingSubscriptions: false}));
   }
 
   public deleteSubscription = (subscription) => {
@@ -710,6 +714,30 @@ class App extends React.Component<any, any> {
     this.setState({activeTab})
   }
 
+  public handleSubmit = async (event) => {
+    event.preventDefault();
+    const address = this.state.address;
+    const collectionSlug = this.state.formCollection;
+    const notifyType = this.state.formNotification;
+
+    await fetch('/api/create_notification', {method: 'POST', body: JSON.stringify({
+      address, collectionSlug, notifyType
+    })})
+
+    await this.getPushSubscriptions()
+    await this.setState({activeTab: 'subscriptions'})
+
+  }
+
+  public setFormCollection = (value) => {
+    this.setState({formCollection: value})
+
+  }
+
+  public setFormNotification = (value) => {
+    this.setState({formNotification: value})
+  }
+
   public render = () => {
     const {
       assets,
@@ -755,6 +783,11 @@ class App extends React.Component<any, any> {
                     <Col>
                       <BootstrapButton onClick={() => this.setActiveTab('subscriptions')} variant="outline-primary" active={activeTab==="subscriptions"}>
                         Subscriptions
+                      </BootstrapButton>
+                    </Col>
+                    <Col>
+                      <BootstrapButton onClick={() => this.setActiveTab('create')} variant="outline-primary" active={activeTab==="create"}>
+                        Create Subscription
                       </BootstrapButton>
                     </Col>
                     <Col>
@@ -824,6 +857,44 @@ class App extends React.Component<any, any> {
                             </SContainer>
                           </Column>
                       }
+                    </>
+                  }
+                  {activeTab === 'create' && 
+                    <>
+                      <h3>Create Subscription</h3>
+                      <Form onSubmit={this.handleSubmit}>
+                        <Form.Group className="mb-3" controlId="formBasicEmail">
+                          <Form.Label>Collection</Form.Label>
+                          <Form.Select aria-label="Default select example" onChange={event => this.setFormCollection(event.target.value)}>
+                            <option>Select a collection</option>
+                            <option value="tiny-dinos-eth">tiny dinos (eth)</option>
+                            <option value="cool-cats-nft">Cool Cats NFT</option>
+                            <option value="doodles-official">Doodles</option>
+                            <option value="moonrunnersnft">Moonrunners Official</option>
+                            <option value="proof-moonbirds">Moonbirds</option>
+                            <option value="cryptopunks">CryptoPunks</option>
+                            <option value="boredapeyachtclub">Bored Ape Yacht Club</option>
+                            <option value="mutant-ape-yacht-club">Mutant Ape Yacht Club</option>
+                            <option value="mfers">mfers</option>
+                          </Form.Select>
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="formBasicEmail">
+                          <Form.Label>Notification</Form.Label>
+                          <Form.Select aria-label="Default select example" onChange={event => this.setFormNotification(event.target.value)}>
+                            <option>Select a notification</option>
+                            <option value="listed">listed</option>
+                            <option value="sold">sold</option>
+                            <option value="transferred">transferred</option>
+                            <option value="metadataUpdates">metadataUpdates</option>
+                            <option value="cancelled">cancelled</option>
+                            <option value="receivedOffer">receivedOffer</option>
+                            <option value="receivedBid">receivedBid</option>
+                          </Form.Select>
+                        </Form.Group>
+                        <BootstrapButton variant="primary" type="submit">
+                          Submit
+                        </BootstrapButton>
+                      </Form>
                     </>
                   }
                 </Container>

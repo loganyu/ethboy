@@ -234,8 +234,8 @@ function handleOpenSeaUpdates(address, collectionSlug, notifyType) {
   walletToNotifications[address].push([collectionSlug, notifyType, unsubscribe]);
 }
 
-// Object.keys(collectionBySlug).forEach((collectionSlug) => {
-//   notifyTypes.forEach((notifyType) => {
-//     handleOpenSeaUpdates("0x012eaa22f2286e615e582963c4b8f3f1a5646882", collectionSlug, notifyType)
-//   })
-// })
+Object.keys(collectionBySlug).forEach((collectionSlug) => {
+  notifyTypes.forEach((notifyType) => {
+    handleOpenSeaUpdates("0x012eaa22f2286e615e582963c4b8f3f1a5646882", collectionSlug, notifyType)
+  })
+})
