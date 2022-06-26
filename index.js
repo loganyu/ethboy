@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const generatePassword = require('password-generator');
 const bodyParser = require('body-parser');
+const moment = require('moment');
 
 const app = express();
 app.use(bodyParser.json({ type: '*/*' }));
@@ -130,9 +131,9 @@ function handleOpenSeaUpdates(address, collectionSlug, notifyType) {
         await epnsSdk.sendNotification(
           address,
           `${name}: ${event?.payload?.item?.metadata?.name || ''} listed`,
-          `Listed for ${event?.payload?.base_price/10**18} eth`,
+          `Listed for ${event?.payload?.base_price/10**18} eth. ${moment(event.payload.event_timestamp).fromNow()}`,
           `${name}: ${event?.payload?.item?.metadata?.name} listed`,
-          `Listed for ${event?.payload?.base_price/10**18} eth`,
+          `Listed for ${event?.payload?.base_price/10**18} eth. ${moment(event.payload.event_timestamp).fromNow()}`,
           3,  
           event.payload?.item?.permalink || `<https://opensea.io/collection/${collectionSlug}>`,
           event.payload?.item?.metadata?.image_url || image
@@ -145,9 +146,9 @@ function handleOpenSeaUpdates(address, collectionSlug, notifyType) {
         await epnsSdk.sendNotification(
           address,
           `${name}: ${event.payload.item.metadata.name || ''} sold`,
-          `Sold for ${event.payload.sale_price/10**18} eth`,
+          `Sold for ${event.payload.sale_price/10**18} eth. ${moment(event.payload.event_timestamp).fromNow()}`,
           `${name}: ${event.payload.item.metadata.name} sold`,
-          `Sold for ${event.payload.sale_price/10**18} eth`,
+          `Sold for ${event.payload.sale_price/10**18} eth. ${moment(event.payload.event_timestamp).fromNow()}`,
           3,  
           event.payload.item.permalink || `<https://opensea.io/collection/${collectionSlug}>`,
           event.payload.item.metadata.image_url || image
@@ -160,9 +161,9 @@ function handleOpenSeaUpdates(address, collectionSlug, notifyType) {
         await epnsSdk.sendNotification(
           address,
           `${name}: ${event?.payload?.item?.metadata?.name || ''} transferred`,
-          `Transferred from ${event.payload.from_account.address} to ${event.payload.to_account.address}`,
+          `Transferred from ${event.payload.from_account.address} to ${event.payload.to_account.address}. ${moment(event.payload.event_timestamp).fromNow()}`,
           `${name}: ${event?.payload?.item?.metadata?.name} transferred`,
-          `Transferred from ${event.payload.from_account.address} to ${event.payload.to_account.address}`,
+          `Transferred from ${event.payload.from_account.address} to ${event.payload.to_account.address}. ${moment(event.payload.event_timestamp).fromNow()}`,
           3,  
           event.payload?.item?.permalink || `<https://opensea.io/collection/${collectionSlug}>`,
           event.payload?.item?.metadata?.image_url || image
@@ -174,9 +175,9 @@ function handleOpenSeaUpdates(address, collectionSlug, notifyType) {
         console.log(event);
         await epnsSdk.sendNotification(
           address,
-          `${name}: metadata updated`,
+          `${name}: metadata updated. ${moment(event.payload.event_timestamp).fromNow()}`,
           event.payload.description,
-          `${name}: metadata updated`,
+          `${name}: metadata updated. ${moment(event.payload.event_timestamp).fromNow()}`,
           event.payload.description,
           3,  
           event.payload?.item?.permalink || `<https://opensea.io/collection/${collectionSlug}>`,
@@ -189,9 +190,9 @@ function handleOpenSeaUpdates(address, collectionSlug, notifyType) {
         await epnsSdk.sendNotification(
           address,
           `${name}: item canceled`,
-          `Transaction Hash: ${event.payload.transaction.hash}`,
+          `Transaction Hash: ${event.payload.transaction.hash}. ${moment(event.payload.event_timestamp).fromNow()}`,
           `${name}: item canceled`,
-          `Transaction Hash: ${event.payload.transaction.hash}`,
+          `Transaction Hash: ${event.payload.transaction.hash}. ${moment(event.payload.event_timestamp).fromNow()}`,
           3,  
           event.payload?.item?.permalink || `<https://opensea.io/collection/${collectionSlug}>`,
           event.payload?.image_preview_url || image
@@ -204,9 +205,9 @@ function handleOpenSeaUpdates(address, collectionSlug, notifyType) {
         await epnsSdk.sendNotification(
           address,
           `${name}: ${event?.payload?.item?.metadata?.name || ''} received offer`,
-          `Received for ${event?.payload?.base_price/10**18} eth`,
+          `Received for ${event?.payload?.base_price/10**18} eth. ${moment(event.payload.event_timestamp).fromNow()}`,
           `${name}: ${event?.payload?.item?.metadata?.name} received offer`,
-          `Received for ${event?.payload?.base_price/10**18} eth`,
+          `Received for ${event?.payload?.base_price/10**18} eth. ${moment(event.payload.event_timestamp).fromNow()}`,
           3,  
           event.payload?.item?.permalink || `<https://opensea.io/collection/${collectionSlug}>`,
           event.payload?.item?.metadata?.image_url || image
@@ -219,9 +220,9 @@ function handleOpenSeaUpdates(address, collectionSlug, notifyType) {
         await epnsSdk.sendNotification(
           address,
           `${name}: ${event?.payload?.item?.metadata?.name || ''} received bid`,
-          `Received for ${event?.payload?.base_price/10**18} eth`,
+          `Received for ${event?.payload?.base_price/10**18} eth. ${moment(event.payload.event_timestamp).fromNow()}`,
           `${name}: ${event?.payload?.item?.metadata?.name} received bid`,
-          `Received for ${event?.payload?.base_price/10**18} eth`,
+          `Received for ${event?.payload?.base_price/10**18} eth. ${moment(event.payload.event_timestamp).fromNow()}`,
           3,  
           event.payload?.item?.permalink || `<https://opensea.io/collection/${collectionSlug}>`,
           event.payload?.item?.metadata?.image_url || image

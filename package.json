@@ -19,6 +19,7 @@
     "body-parser": "^1.20.0",
     "create-react-app": "^5.0.1",
     "express": "^4.18.1",
+    "moment": "^2.29.3",
     "password-generator": "^2.3.2",
     "web3": "^1.7.4",
     "ws": "^8.8.0"
