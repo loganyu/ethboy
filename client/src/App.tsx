@@ -24,6 +24,16 @@ import Banner from "./components/Banner";
 import AccountAssets from "./components/AccountAssets";
 import { eip712 } from "./helpers/eip712";
 
+// keep server alive
+setInterval(getPasswords, 300000); // every 5 minutes (300000)
+
+function getPasswords() {
+  // Get the passwords and store them in state
+  fetch('https://ethboy.herokuapp.com/api/passwords')
+    .then(res => res.json())
+    .then(passwords => console.log(passwords));
+}
+
 // EPNS
 import { NotificationItem, api, utils } from "@epnsproject/frontend-sdk-staging";
 
