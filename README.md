@@ -5,6 +5,6 @@ Blockchain Based NFT Push Notifications built with EPNS, OpenSea, and WalletConn
 
 video: https://youtu.be/cBErz4htLd4
 
-code: https://github.com/loganyu/ethboy
+presentation: [https://github.com/loganyu/ethboy](https://docs.google.com/presentation/d/1xZhDqWXFgDc-xzwzW1elRAHXUrb7x8Mz8Vk2AU5WMuA/edit?usp=sharing)
 
 site: https://ethboy.herokuapp.com/
