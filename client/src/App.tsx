@@ -769,7 +769,7 @@ class App extends React.Component<any, any> {
             {!address && !assets.length ? (
               <SLanding center>
                 <h3>
-                  {`Manage EPNS Notifications with EthBoy! (◠‿◠)`}
+                  {`Create EPNS Notifications for OpenSea with EthBoy! (◠‿◠)`}
                 </h3>
                 <SButtonContainer>
                   <SConnectButton left onClick={this.connect} fetching={fetching}>

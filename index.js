@@ -43,13 +43,13 @@ app.get('/api/passwords', (req, res) => {
 
 
 app.get('/api/notifications/:address', (req, res) => {
-  if (walletToNotifications[req.params.address] === undefined){
+  if (walletToNotifications[req.params.address.toLowerCase()] === undefined){
     res.json();
   //  return
   }
   console.log(walletToNotifications)
   console.log(req.params.address)
-  const notifications = walletToNotifications[req.params.address].map((not) => not.slice(0,-1))
+  const notifications = walletToNotifications[req.params.address.toLowerCase()].map((not) => not.slice(0,-1))
   // Return them as json
   res.json(notifications);
 
@@ -57,7 +57,7 @@ app.get('/api/notifications/:address', (req, res) => {
 });
 
 app.post('/api/create_notification', (req, res) => {
-  const address = req.body.address; 
+  const address = req.body.address.toLowerCase(); 
   const collectionSlug = req.body.collectionSlug;
   const notifyType = req.body.notifyType;
 
@@ -68,7 +68,7 @@ app.post('/api/create_notification', (req, res) => {
 
 app.post('/api/remove_notification', (req, res) => {
   console.log('remove notification', req.body)
-  const address = req.body.address; 
+  const address = req.body.address.toLowerCase(); 
   const collectionSlug = req.body.collectionSlug;
   const notifyType = req.body.notifyType;
   console.log('before', walletToNotifications[address])
@@ -120,7 +120,7 @@ const openSeaClient = new OpenSeaStreamClient({
 function handleOpenSeaUpdates(address, collectionSlug, notifyType) {
   console.log('handleOpenSeaUpdates')
   openSeaClient.connect();
-  walletToNotifications[address] ||= []
+  walletToNotifications[address.toLowerCase()] ||= []
   const { name, image } = collectionBySlug[collectionSlug];
   let unsubscribe;
 
